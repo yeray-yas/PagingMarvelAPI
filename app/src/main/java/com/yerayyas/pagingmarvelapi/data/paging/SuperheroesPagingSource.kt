@@ -9,7 +9,8 @@ import com.yerayyas.pagingmarvelapi.utils.Constants.API_KEY
 import com.yerayyas.pagingmarvelapi.utils.Constants.HASH
 import com.yerayyas.pagingmarvelapi.utils.Constants.TS
 
-class SuperheroesPagingSource(private val apiService: MarvelApiService) : PagingSource<Int, SuperheroItemResponse>() {
+class SuperheroesPagingSource(private val apiService: MarvelApiService,
+                              private val searchQuery: String) : PagingSource<Int, SuperheroItemResponse>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SuperheroItemResponse> {
         try {
             val page = params.key ?: 0

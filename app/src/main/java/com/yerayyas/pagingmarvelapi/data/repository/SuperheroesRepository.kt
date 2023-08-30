@@ -1,5 +1,8 @@
 package com.yerayyas.pagingmarvelapi.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import com.yerayyas.pagingmarvelapi.data.api.MarvelApiService
 import com.yerayyas.pagingmarvelapi.data.model.SuperheroItemResponse
@@ -8,6 +11,7 @@ import com.yerayyas.pagingmarvelapi.utils.Constants.API_KEY
 import com.yerayyas.pagingmarvelapi.utils.Constants.HASH
 import com.yerayyas.pagingmarvelapi.utils.Constants.PAGE_SIZE
 import com.yerayyas.pagingmarvelapi.utils.Constants.TS
+import kotlinx.coroutines.flow.Flow
 
 class SuperheroesRepository(private val apiService: MarvelApiService) {
     private val superheroesPagingSource = SuperheroesPagingSource(apiService)
@@ -33,5 +37,12 @@ class SuperheroesRepository(private val apiService: MarvelApiService) {
         } catch (e: Exception) {
             // Manejo de errores
         }
+    }
+
+    fun getSuperheroesPagingFlow(searchQuery: String = ""): Flow<PagingData<SuperheroItemResponse>> {
+        return Pager(
+            config = PagingConfig(pageSize = PAGE_SIZE),
+            pagingSourceFactory = { SuperheroesPagingSource(apiService, searchQuery) }
+        ).flow
     }
 }
