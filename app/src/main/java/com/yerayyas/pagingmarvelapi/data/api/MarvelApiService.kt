@@ -15,7 +15,9 @@ interface MarvelApiService {
         @Query("nameStartsWith") nameStartsWith: String,
         @Query("apikey") apiKey: String,
         @Query("hash") hash: String,
-        @Query("ts") ts: Long
+        @Query("ts") ts: Long,
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int
     ): Response<SuperheroDataResponse>
 
     @GET("/v1/public/characters")

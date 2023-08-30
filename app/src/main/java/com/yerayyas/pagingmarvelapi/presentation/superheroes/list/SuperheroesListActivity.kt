@@ -1,13 +1,11 @@
 package com.yerayyas.pagingmarvelapi.presentation.superheroes.list
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.lifecycle.Lifecycle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.yerayyas.pagingmarvelapi.data.api.MarvelApiManager
 import com.yerayyas.pagingmarvelapi.data.api.MarvelApiService
@@ -32,6 +30,8 @@ class SuperheroesListActivity : AppCompatActivity() {
     private lateinit var retrofit: Retrofit
     private lateinit var adapter: SuperheroesAdapter
     private lateinit var repository: SuperheroesRepository
+    // Variable to track whether we are in the searchview
+      //private var inSearchMode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,20 +52,45 @@ class SuperheroesListActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
+        // Access the SearchView from the layout
+        val searchView = binding.svSuperhero
 
+        // Set up the OnQueryTextListener
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (query != null) {
+                    // Launch a coroutine to call the suspend function
+                    lifecycleScope.launch {
+                        viewModel.setSearchQuery(query)
+                    }
+                    searchView.clearFocus()
+                }
+                //inSearchMode = true
+                return true
+            }
 
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // Optionally, you can handle text changes here
+                return true
+            }
+        })
 
-
-        // Observa los cambios en la lista paginada y actualiza el adaptador
+        // Observe the changes in the list of superheroes using Paging
         lifecycleScope.launch {
             viewModel.superheroes.collectLatest { pagingData ->
                 adapter.submitData(pagingData)
-                // Verifica si el último elemento es visible y llama a refreshSuperheroes si es necesario
-                val lastVisibleItemPosition = (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
-                if (lastVisibleItemPosition >= adapter.itemCount - 1) {
-                    viewModel.refreshSuperheroes()
-                }
             }
         }
     }
+
+//    override fun onBackPressed() {
+//        // Si estamos en la vista de búsqueda, limpiamos el texto del SearchView y volvemos a la lista original
+//        if (inSearchMode) {
+//            binding.svSuperhero.setQuery("", false) // Limpia el texto del SearchView
+//            inSearchMode = false
+//            return
+//        }
+//        // Si no estamos en la vista de búsqueda, ejecuta el comportamiento predeterminado del botón "Back"
+//        super.onBackPressed()
+//    }
 }
