@@ -59,10 +59,4 @@ class SuperheroesPagingSource(private val apiService: MarvelApiService) : Paging
     fun updateData(newData: List<SuperheroItemResponse>) {
         currentData = newData
     }
-
-//    companion object {
-//        fun create(apiService: MarvelApiService): SuperheroesPagingSource {
-//            return SuperheroesPagingSource(apiService, emptyList())
-//        }
-//    }
 }
