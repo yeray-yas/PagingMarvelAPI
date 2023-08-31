@@ -9,15 +9,23 @@ import com.yerayyas.pagingmarvelapi.utils.Constants.API_KEY
 import com.yerayyas.pagingmarvelapi.utils.Constants.HASH
 import com.yerayyas.pagingmarvelapi.utils.Constants.TS
 
-class SuperheroesPagingSource(private val apiService: MarvelApiService,
-                              private val searchQuery: String) : PagingSource<Int, SuperheroItemResponse>() {
+class SuperheroesPagingSource(
+    private val apiService: MarvelApiService
+) : PagingSource<Int, SuperheroItemResponse>() {
+
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SuperheroItemResponse> {
         try {
             val page = params.key ?: 0
             val limit = params.loadSize // Obtén el tamaño de carga desde los parámetros
             val offset = page * limit // Calcula el offset
 
-            val response = apiService.getSuperheroes(API_KEY, HASH, TS, limit, offset)
+            val response = apiService.getSuperheroes(
+                apiKey = API_KEY,
+                hash = HASH,
+                ts = TS,
+                limit = limit,
+                offset = offset
+            )
             Log.i("PUTAZO", "API Response: ${response.raw()}")
 
             if (response.isSuccessful) {
@@ -60,4 +68,5 @@ class SuperheroesPagingSource(private val apiService: MarvelApiService,
     fun updateData(newData: List<SuperheroItemResponse>) {
         currentData = newData
     }
+
 }
