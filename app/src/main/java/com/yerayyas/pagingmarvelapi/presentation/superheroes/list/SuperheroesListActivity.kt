@@ -1,5 +1,6 @@
 package com.yerayyas.pagingmarvelapi.presentation.superheroes.list
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,8 @@ import com.yerayyas.pagingmarvelapi.data.api.MarvelApiService
 import com.yerayyas.pagingmarvelapi.data.repository.SuperheroesRepository
 import com.yerayyas.pagingmarvelapi.databinding.ActivitySuperheroesListBinding
 import com.yerayyas.pagingmarvelapi.presentation.adapters.SuperheroesAdapter
+import com.yerayyas.pagingmarvelapi.presentation.superheroes.detail.SuperheroesDetailActivity
+import com.yerayyas.pagingmarvelapi.presentation.superheroes.detail.SuperheroesDetailActivity.Companion.EXTRA_ID
 import com.yerayyas.pagingmarvelapi.utils.SuperheroListViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -46,7 +49,9 @@ class SuperheroesListActivity : AppCompatActivity() {
         Picasso.get().setIndicatorsEnabled(true)
         Picasso.get().isLoggingEnabled = true
 
-        adapter = SuperheroesAdapter()
+        adapter = SuperheroesAdapter{ superheroId ->
+            navigateToDetail(superheroId)
+        }
 
         val recyclerView = binding.rvSuperhero
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -81,6 +86,12 @@ class SuperheroesListActivity : AppCompatActivity() {
                 adapter.submitData(pagingData)
             }
         }
+    }
+
+    private fun navigateToDetail(id:Int){
+        val intent = Intent(this, SuperheroesDetailActivity::class.java)
+        intent.putExtra(EXTRA_ID, id)
+        startActivity(intent)
     }
 
 //    override fun onBackPressed() {
