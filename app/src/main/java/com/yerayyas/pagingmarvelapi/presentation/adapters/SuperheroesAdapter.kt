@@ -70,3 +70,5 @@ class SuperheroesAdapter(private val onItemSelected:(Int) -> Unit) : PagingDataA
         }
     }
 }
+
+
