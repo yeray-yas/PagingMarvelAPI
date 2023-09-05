@@ -12,6 +12,8 @@ import com.yerayyas.pagingmarvelapi.data.api.MarvelApiManager
 import com.yerayyas.pagingmarvelapi.data.api.MarvelApiService
 import com.yerayyas.pagingmarvelapi.data.repository.SuperheroesRepository
 import com.yerayyas.pagingmarvelapi.databinding.ActivitySuperheroesListBinding
+import com.yerayyas.pagingmarvelapi.domain.useCases.GetSuperheroesUseCase
+import com.yerayyas.pagingmarvelapi.domain.useCases.SearchSuperheroesUseCase
 import com.yerayyas.pagingmarvelapi.presentation.adapters.SuperheroesAdapter
 import com.yerayyas.pagingmarvelapi.presentation.superheroes.detail.SuperheroesDetailActivity
 import com.yerayyas.pagingmarvelapi.presentation.superheroes.detail.SuperheroesDetailActivity.Companion.EXTRA_ID
@@ -22,7 +24,7 @@ import retrofit2.Retrofit
 
 class SuperheroesListActivity : AppCompatActivity() {
     private val viewModelFactory: SuperheroListViewModelFactory by lazy {
-        SuperheroListViewModelFactory(repository)
+        SuperheroListViewModelFactory(getSuperheroesUseCase, searchSuperheroesUseCase)
     }
 
     private val viewModel: SuperheroListViewModel by viewModels {
@@ -33,6 +35,13 @@ class SuperheroesListActivity : AppCompatActivity() {
     private lateinit var retrofit: Retrofit
     private lateinit var adapter: SuperheroesAdapter
     private lateinit var repository: SuperheroesRepository
+    private val getSuperheroesUseCase: GetSuperheroesUseCase by lazy {
+        GetSuperheroesUseCase(repository)
+    }
+    private val searchSuperheroesUseCase: SearchSuperheroesUseCase by lazy {
+        SearchSuperheroesUseCase(repository)
+    }
+
     // Variable to track whether we are in the searchview
       //private var inSearchMode = false
 
@@ -93,15 +102,4 @@ class SuperheroesListActivity : AppCompatActivity() {
         intent.putExtra(EXTRA_ID, id)
         startActivity(intent)
     }
-
-//    override fun onBackPressed() {
-//        // Si estamos en la vista de búsqueda, limpiamos el texto del SearchView y volvemos a la lista original
-//        if (inSearchMode) {
-//            binding.svSuperhero.setQuery("", false) // Limpia el texto del SearchView
-//            inSearchMode = false
-//            return
-//        }
-//        // Si no estamos en la vista de búsqueda, ejecuta el comportamiento predeterminado del botón "Back"
-//        super.onBackPressed()
-//    }
 }
