@@ -8,7 +8,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.picasso.Picasso
-import com.yerayyas.pagingmarvelapi.data.api.MarvelApiManager
 import com.yerayyas.pagingmarvelapi.data.api.MarvelApiService
 import com.yerayyas.pagingmarvelapi.data.repository.SuperheroesRepository
 import com.yerayyas.pagingmarvelapi.databinding.ActivitySuperheroesListBinding
@@ -22,9 +21,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SuperheroesListActivity : AppCompatActivity() {
+
     private val viewModelFactory: SuperheroListViewModelFactory by lazy {
         SuperheroListViewModelFactory(getSuperheroesUseCase, searchSuperheroesUseCase)
     }
@@ -33,8 +34,9 @@ class SuperheroesListActivity : AppCompatActivity() {
         viewModelFactory
     }
 
+    @Inject
+    lateinit var retrofit: Retrofit // Inyecta la instancia de Retrofit
     private lateinit var binding: ActivitySuperheroesListBinding
-    private lateinit var retrofit: Retrofit
     private lateinit var adapter: SuperheroesAdapter
     private lateinit var repository: SuperheroesRepository
     private val getSuperheroesUseCase: GetSuperheroesUseCase by lazy {
@@ -44,18 +46,14 @@ class SuperheroesListActivity : AppCompatActivity() {
         SearchSuperheroesUseCase(repository)
     }
 
-    // Variable to track whether we are in the searchview
-      //private var inSearchMode = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySuperheroesListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // Inicializa el repository y el adapter
-        val apiService = MarvelApiManager.retrofit.create(MarvelApiService::class.java)
+        val apiService = retrofit.create(MarvelApiService::class.java)
         repository = SuperheroesRepository(apiService)
-        retrofit = MarvelApiManager.retrofit
 
         Picasso.get().setIndicatorsEnabled(true)
         Picasso.get().isLoggingEnabled = true
@@ -81,7 +79,6 @@ class SuperheroesListActivity : AppCompatActivity() {
                     }
                     searchView.clearFocus()
                 }
-                //inSearchMode = true
                 return true
             }
 
