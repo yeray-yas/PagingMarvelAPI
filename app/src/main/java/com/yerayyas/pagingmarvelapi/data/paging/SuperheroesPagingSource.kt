@@ -62,11 +62,4 @@ class SuperheroesPagingSource(
         // Devolvemos la página anterior o siguiente según corresponda
         return closestPage?.prevKey ?: closestPage?.nextKey
     }
-
-    private var currentData: List<SuperheroItemResponse> = emptyList()
-
-    fun updateData(newData: List<SuperheroItemResponse>) {
-        currentData = newData
-    }
-
 }

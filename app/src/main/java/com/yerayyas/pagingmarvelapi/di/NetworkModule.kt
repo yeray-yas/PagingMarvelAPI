@@ -32,5 +32,4 @@ object NetworkModule {
     fun provideMarvelApiService(retrofit: Retrofit): MarvelApiService {
         return retrofit.create(MarvelApiService::class.java)
     }
-
 }
