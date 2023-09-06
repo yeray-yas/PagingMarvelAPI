@@ -10,9 +10,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.yerayyas.pagingmarvelapi.domain.useCases.GetSuperheroesUseCase
 import com.yerayyas.pagingmarvelapi.domain.useCases.SearchSuperheroesUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import javax.inject.Inject
 
-class SuperheroListViewModel(
+@HiltViewModel
+class SuperheroListViewModel @Inject constructor(
     private val getSuperheroesUseCase: GetSuperheroesUseCase,
     private val searchSuperheroesUseCase: SearchSuperheroesUseCase
 ) : ViewModel() {

@@ -18,10 +18,12 @@ import com.yerayyas.pagingmarvelapi.presentation.adapters.SuperheroesAdapter
 import com.yerayyas.pagingmarvelapi.presentation.superheroes.detail.SuperheroesDetailActivity
 import com.yerayyas.pagingmarvelapi.presentation.superheroes.detail.SuperheroesDetailActivity.Companion.EXTRA_ID
 import com.yerayyas.pagingmarvelapi.utils.SuperheroListViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 
+@AndroidEntryPoint
 class SuperheroesListActivity : AppCompatActivity() {
     private val viewModelFactory: SuperheroListViewModelFactory by lazy {
         SuperheroListViewModelFactory(getSuperheroesUseCase, searchSuperheroesUseCase)
