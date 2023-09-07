@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.picasso.Picasso
 import com.yerayyas.pagingmarvelapi.data.api.MarvelApiService
+import com.yerayyas.pagingmarvelapi.data.database.SuperheroDao
 import com.yerayyas.pagingmarvelapi.data.repository.SuperheroesRepository
 import com.yerayyas.pagingmarvelapi.databinding.ActivitySuperheroesListBinding
 import com.yerayyas.pagingmarvelapi.domain.useCases.GetSuperheroesUseCase
@@ -27,7 +28,7 @@ import javax.inject.Inject
 class SuperheroesListActivity : AppCompatActivity() {
 
     private val viewModelFactory: SuperheroListViewModelFactory by lazy {
-        SuperheroListViewModelFactory(getSuperheroesUseCase, searchSuperheroesUseCase)
+        SuperheroListViewModelFactory(getSuperheroesUseCase, searchSuperheroesUseCase, superheroDao)
     }
 
     private val viewModel: SuperheroListViewModel by viewModels {
@@ -36,6 +37,8 @@ class SuperheroesListActivity : AppCompatActivity() {
 
     @Inject
     lateinit var retrofit: Retrofit // Inyecta la instancia de Retrofit
+    @Inject
+    lateinit var superheroDao: SuperheroDao
     private lateinit var binding: ActivitySuperheroesListBinding
     private lateinit var adapter: SuperheroesAdapter
     private lateinit var repository: SuperheroesRepository
@@ -53,7 +56,7 @@ class SuperheroesListActivity : AppCompatActivity() {
 
         // Inicializa el repository y el adapter
         val apiService = retrofit.create(MarvelApiService::class.java)
-        repository = SuperheroesRepository(apiService)
+        repository = SuperheroesRepository(apiService, superheroDao)
 
         Picasso.get().setIndicatorsEnabled(true)
         Picasso.get().isLoggingEnabled = true
@@ -91,6 +94,14 @@ class SuperheroesListActivity : AppCompatActivity() {
         // Observe the changes in the list of superheroes using Paging
         lifecycleScope.launch {
             viewModel.superheroes.collectLatest { pagingData ->
+                adapter.submitData(pagingData)
+            }
+        }
+
+
+        // Observe the offline data
+        lifecycleScope.launch {
+            viewModel.offlineSuperheroes.collectLatest { pagingData ->
                 adapter.submitData(pagingData)
             }
         }
