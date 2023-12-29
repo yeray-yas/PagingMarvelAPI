@@ -14,7 +14,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="@string/nothing"/>
+        android:contentDescription="@string/superhero_image"/>
 
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"

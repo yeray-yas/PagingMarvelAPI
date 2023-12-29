@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">PagingMarvelAPI</string>
-    <string name="nothing">nothing</string>
+    <string name="superhero_image">Superhero image</string>
 </resources>
