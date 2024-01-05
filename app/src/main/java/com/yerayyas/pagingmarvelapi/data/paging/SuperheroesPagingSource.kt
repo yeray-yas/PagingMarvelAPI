@@ -1,6 +1,5 @@
 package com.yerayyas.pagingmarvelapi.data.paging
 
-import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.yerayyas.pagingmarvelapi.data.api.MarvelApiService
@@ -8,6 +7,7 @@ import com.yerayyas.pagingmarvelapi.data.model.SuperheroItemResponse
 import com.yerayyas.pagingmarvelapi.utils.Constants.API_KEY
 import com.yerayyas.pagingmarvelapi.utils.Constants.HASH
 import com.yerayyas.pagingmarvelapi.utils.Constants.TS
+import java.io.IOException
 
 class SuperheroesPagingSource(
     private val apiService: MarvelApiService
@@ -26,11 +26,9 @@ class SuperheroesPagingSource(
                 limit = limit,
                 offset = offset
             )
-            Log.i("PUTAZO", "API Response: ${response.raw()}")
 
             if (response.isSuccessful) {
                 val superheroes = response.body()?.data?.superheroes
-                Log.i("PUTAZO", "Superheroes Data: $superheroes")
                 return if (superheroes != null) {
                     val prevKey = if (page == 0) null else page - 1
                     val nextKey = if (superheroes.isEmpty()) null else page + 1
@@ -46,13 +44,23 @@ class SuperheroesPagingSource(
                 }
             } else {
                 // La respuesta no fue exitosa
-                return LoadResult.Error(Exception("Respuesta no exitosa: ${response.code()}"))
+                val errorMessage = when (response.code()) {
+                    401 -> "Error de autenticación: API key inválida"
+                    404 -> "No se encontraron datos para la página $page"
+                    in 500 until 600 -> "Error del servidor: ${response.code()}"
+                    else -> "Error desconocido: ${response.code()}"
+                }
+                return LoadResult.Error(Exception(errorMessage))
             }
+        } catch (e: IOException) {
+            // Error de conexión a Internet
+            return LoadResult.Error(Exception("Error de conexión a Internet"))
         } catch (e: Exception) {
-            // Manejo de otros errores
-            return LoadResult.Error(e)
+            // Otros errores
+            return LoadResult.Error(Exception("Error cargando datos: ${e.message}", e))
         }
     }
+
 
     override fun getRefreshKey(state: PagingState<Int, SuperheroItemResponse>): Int? {
         // Intentamos encontrar la página más cercana a la posición anclada (anchorPosition)

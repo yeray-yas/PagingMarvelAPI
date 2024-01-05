@@ -35,7 +35,8 @@ class SuperheroesListActivity : AppCompatActivity() {
     }
 
     @Inject
-    lateinit var retrofit: Retrofit // Inyecta la instancia de Retrofit
+    lateinit var retrofit: Retrofit
+
     private lateinit var binding: ActivitySuperheroesListBinding
     private lateinit var adapter: SuperheroesAdapter
     private lateinit var repository: SuperheroesRepository
@@ -51,29 +52,31 @@ class SuperheroesListActivity : AppCompatActivity() {
         binding = ActivitySuperheroesListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Inicializa el repository y el adapter
-        val apiService = retrofit.create(MarvelApiService::class.java)
-        repository = SuperheroesRepository(apiService)
+        initializeRepository()
 
-        Picasso.get().setIndicatorsEnabled(true)
-        Picasso.get().isLoggingEnabled = true
+        setImageParameters()
 
-        adapter = SuperheroesAdapter{ superheroId ->
-            navigateToDetail(superheroId)
+        initializeAdapter()
+
+        setupSearchView()
+
+        observeSuperheroesListChanges()
+    }
+
+    private fun observeSuperheroesListChanges() {
+        lifecycleScope.launch {
+            viewModel.superheroes.collectLatest { pagingData ->
+                adapter.submitData(pagingData)
+            }
         }
+    }
 
-        val recyclerView = binding.rvSuperhero
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = adapter
-
-        // Access the SearchView from the layout
+    private fun setupSearchView() {
         val searchView = binding.svSuperhero
 
-        // Set up the OnQueryTextListener
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query != null) {
-                    // Launch a coroutine to call the suspend function
                     lifecycleScope.launch {
                         viewModel.setSearchQuery(query)
                     }
@@ -83,17 +86,30 @@ class SuperheroesListActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                // Optionally, you can handle text changes here
+
                 return true
             }
         })
+    }
 
-        // Observe the changes in the list of superheroes using Paging
-        lifecycleScope.launch {
-            viewModel.superheroes.collectLatest { pagingData ->
-                adapter.submitData(pagingData)
-            }
+    private fun initializeAdapter() {
+        adapter = SuperheroesAdapter { superheroId ->
+            navigateToDetail(superheroId)
         }
+
+        val recyclerView = binding.rvSuperhero
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
+    }
+
+    private fun setImageParameters() {
+        Picasso.get().setIndicatorsEnabled(true)
+        Picasso.get().isLoggingEnabled = true
+    }
+
+    private fun initializeRepository() {
+        val apiService = retrofit.create(MarvelApiService::class.java)
+        repository = SuperheroesRepository(apiService)
     }
 
     private fun navigateToDetail(id:Int){
