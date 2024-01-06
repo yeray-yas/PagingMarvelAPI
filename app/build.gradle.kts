@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.yerayyas.pagingmarvelapi"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.yerayyas.pagingmarvelapi"
@@ -43,10 +43,13 @@ android {
 dependencies {
 
     //Basic dependencies
-    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.9.0")
+    implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+
+    // SwipeRefresh
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
     // Retrofit2
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -60,17 +63,17 @@ dependencies {
     implementation("com.squareup.picasso:picasso:2.71828")
 
     // ViewModel
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.activity:activity-ktx:1.7.2")
-    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.activity:activity-ktx:1.8.2")
+    implementation("androidx.core:core-ktx:1.12.0")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
     // Paging
-    implementation("androidx.paging:paging-runtime-ktx:3.2.0")
+    implementation("androidx.paging:paging-runtime-ktx:3.2.1")
 
     // Dagger Hilt
     implementation("com.google.dagger:hilt-android:2.46.1")

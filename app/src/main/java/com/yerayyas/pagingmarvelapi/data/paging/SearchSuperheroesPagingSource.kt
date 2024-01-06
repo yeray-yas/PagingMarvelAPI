@@ -7,6 +7,8 @@ import com.yerayyas.pagingmarvelapi.data.model.SuperheroItemResponse
 import com.yerayyas.pagingmarvelapi.utils.Constants.API_KEY
 import com.yerayyas.pagingmarvelapi.utils.Constants.HASH
 import com.yerayyas.pagingmarvelapi.utils.Constants.TS
+import com.yerayyas.pagingmarvelapi.utils.ErrorUtils
+import retrofit2.HttpException
 import java.io.IOException
 
 class SearchSuperheroesPagingSource(
@@ -46,20 +48,18 @@ class SearchSuperheroesPagingSource(
                 }
             } else {
                 // La respuesta no fue exitosa
-                val errorMessage = when (response.code()) {
-                    401 -> "Error de autenticación: API key inválida"
-                    404 -> "No se encontraron superhéroes para la búsqueda '$searchQuery'"
-                    in 500 until 600 -> "Error del servidor: ${response.code()}"
-                    else -> "Error desconocido: ${response.code()}"
-                }
+                val errorMessage = ErrorUtils.getErrorMessage(response.code(), searchQuery)
                 return LoadResult.Error(Exception(errorMessage))
             }
         } catch (e: IOException) {
             // Error de conexión a Internet
-            return LoadResult.Error(Exception("Error de conexión a Internet"))
+            return LoadResult.Error(Exception(ErrorUtils.getNetworkErrorMessage(), e))
+        } catch (e: HttpException) {
+            // Error HTTP
+            return LoadResult.Error(Exception(ErrorUtils.getErrorMessage(e.code(), searchQuery), e))
         } catch (e: Exception) {
             // Otros errores
-            return LoadResult.Error(Exception("Error cargando datos: ${e.message}", e))
+            return LoadResult.Error(Exception(ErrorUtils.getErrorMessage(0, searchQuery), e))
         }
     }
 
@@ -69,4 +69,3 @@ class SearchSuperheroesPagingSource(
         return closestPage?.prevKey ?: closestPage?.nextKey
     }
 }
-

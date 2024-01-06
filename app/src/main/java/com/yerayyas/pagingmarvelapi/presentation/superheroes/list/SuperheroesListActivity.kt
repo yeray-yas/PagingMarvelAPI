@@ -5,7 +5,9 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.picasso.Picasso
 import com.yerayyas.pagingmarvelapi.data.api.MarvelApiService
@@ -21,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
+import java.io.IOException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -100,6 +103,23 @@ class SuperheroesListActivity : AppCompatActivity() {
         val recyclerView = binding.rvSuperhero
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
+
+        adapter.addLoadStateListener { loadState ->
+            with(binding) {
+                rvSuperhero.isVisible = loadState.source.refresh is LoadState.NotLoading
+                pbSuperhero.isVisible = loadState.source.refresh is LoadState.Loading
+                textViewError.isVisible = loadState.source.refresh is LoadState.Error
+
+                if (binding.textViewError.isVisible) {
+                    val errorMessage = when (val error = (loadState.source.refresh as? LoadState.Error)?.error) {
+                        is IOException -> "Error de conexión a Internet"
+                        else -> error?.localizedMessage ?: "Error desconocido"
+                    }
+                    binding.textViewError.text = errorMessage
+                }
+            }
+        }
+
     }
 
     private fun setImageParameters() {
